@@ -1,0 +1,377 @@
+openapi: 3.0.1
+info:
+  title:  Utility API
+  version: 1.0.0
+
+servers:
+  - url: 'https://localhost:8080/{basepath}'
+    description: Execute locally
+    variables:
+      basepath:
+        default: cicge/1.0
+
+tags:
+  - name: Address
+    description: Utitlity Operations pertaining to Address
+paths:
+  /utility-apis/address-standardization:
+    post:
+      tags:
+        - Address
+      description: Operation to standardize an address
+      operationId: addressStandardizationUsingPost
+      requestBody:
+        description: address needs to be standardized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/address-standardization-request'
+        required: true
+  
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/address-standardization-response'
+        '400':
+          description: Bad Request - Invalid or Unexpected Input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error-response'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error-response'
+        '404':
+          description: No data found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error-response'
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error-response'
+        '415':
+          description: Unsupported Media Type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error-response'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error-response'
+ 
+ 
+components:
+  schemas:
+    address-standardization-request:
+      type: object
+      properties:
+        _metadata:
+          $ref: '#/components/schemas/request-metadata'
+        payload:
+          $ref: '#/components/schemas/address-standardization-payload_POST'
+    
+    address-standardization-payload_POST:
+      type: object
+      properties:
+        addresses:
+          minItems: 1
+          maxItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/address_POST'
+            
+    address_POST:
+      type: object
+      properties:
+        domestic:
+          $ref: '#/components/schemas/domestic-address_POST'
+          
+    domestic-address_POST:
+      type: object
+      properties:
+        non-standardized:
+          $ref: '#/components/schemas/nonstandard-address_POST'
+    nonstandard-address_POST:
+      required:
+       - addressLineOne
+      type: object
+      properties:
+        addressLineOne:
+          nullable: false
+          maxLength: 80
+          type: string
+        addressLineTwo:
+          nullable: true
+          maxLength: 80
+          type: string
+        city:
+          nullable: true
+          maxLength: 40
+          type: string
+        state:
+          nullable: true
+          maxLength: 2
+          type: string
+        zipCode:
+          nullable: true
+          maxLength: 5
+          type: string
+          
+          
+    address-standardization-response:
+      type: object
+      properties:
+        _metadata:
+          $ref: '#/components/schemas/response-metadata'
+        payload:
+          $ref: '#/components/schemas/address-standardization-payload'
+    address-standardization-payload:  
+      type: object
+      properties:
+        addresses:
+          minItems: 1
+          maxItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/address'
+    
+    address:
+      type: object
+      properties:
+     
+        formatted:
+          $ref: '#/components/schemas/formatted-address'
+        domestic:
+          $ref: '#/components/schemas/domestic-address'
+        foreign:
+          $ref: '#/components/schemas/foreign-address'
+    domestic-address:
+      type: object
+      properties:
+        non-standardized:
+          $ref: '#/components/schemas/nonstandard-address'
+        standardized:
+          $ref: '#/components/schemas/standard-address'
+    foreign-address:
+      type: object
+      properties:
+        addressLineOne:
+          nullable: false
+          maxLength: 80
+          type: string
+        addressLineTwo:
+          nullable: false
+          maxLength: 80
+          type: string
+        city:
+          nullable: true
+          maxLength: 40
+          type: string
+        regionProvinceName:
+          nullable: true
+          maxLength: 50
+          type: string
+        country:
+          nullable: false
+          maxLength: 70
+          type: string
+        postalCode:
+          nullable: true
+          maxLength: 10
+          type: string
+    standard-address:
+      type: object
+      properties:
+        addressLineOne:
+          nullable: false
+          maxLength: 80
+          type: string
+        addressLineTwo:
+          nullable: true
+          maxLength: 80
+          type: string
+        addressLineThree:
+          nullable: false
+          maxLength: 80
+          type: string
+        streetNumber:
+          nullable: true
+          maxLength: 10
+          type: string
+        streetName:
+          nullable: true
+          maxLength: 40
+          type: string
+        directionPrefix:
+          nullable: true
+          maxLength: 2
+          type: string
+        directionSuffix:
+          nullable: true
+          maxLength: 2
+          type: string
+        streetSuffix1:
+          nullable: true
+          maxLength: 4
+          type: string
+        streetSuffix2:
+          nullable: true
+          maxLength: 4
+          type: string
+        apartmentNumber:
+          nullable: true
+          maxLength: 6
+          type: string
+        city:
+          nullable: true
+          maxLength: 40
+          type: string
+        state:
+          nullable: true
+          maxLength: 2
+          type: string
+        zipCode:
+          nullable: true
+          maxLength: 5
+          type: string
+        zipFour:
+          nullable: true
+          maxLength: 4
+          type: string
+        county:
+          nullable: true
+          maxLength: 70
+          type: string
+        carrierRouteNumber:
+          nullable: true
+          maxLength: 9
+          type: string
+        postalBarCode:
+          nullable: true
+          maxLength: 30
+          type: string
+        postOfficeBoxIndicator:
+          nullable: false
+          type: boolean
+        standardizedAddressReturnCode:
+          nullable: true
+          maxLength: 12
+          type: string
+        addressSearchKey:
+          nullable: true
+          maxLength: 45
+          type: string
+          description: 'Composite if Street Name, Street Number and Zip code'
+    nonstandard-address:
+      type: object
+      properties:
+        addressLineOne:
+          nullable: false
+          maxLength: 80
+          type: string
+        addressLineTwo:
+          nullable: true
+          maxLength: 80
+          type: string
+        city:
+          nullable: true
+          maxLength: 40
+          type: string
+        state:
+          nullable: true
+          maxLength: 2
+          type: string
+        zipCode:
+          nullable: true
+          maxLength: 5
+          type: string
+        county:
+          nullable: true
+          maxLength: 70
+          type: string
+        standardizedAddressReturnCode:
+          nullable: false
+          maxLength: 12
+          type: string
+        standardizedAddressOverrideReason:
+          type: string
+          maxLength: 30
+    formatted-address:
+      properties:
+        addressLineOne:
+          nullable: false
+          maxLength: 80
+          type: string
+        addressLineTwo:
+          nullable: true
+          maxLength: 80
+          type: string
+        addressLineThree:
+          nullable: false
+          maxLength: 80
+          type: string
+    
+    error-response:
+      type: object
+      properties:
+        _metadata:
+          $ref: '#/components/schemas/response-metadata'
+    response-metadata:
+      nullable: false
+      type: object
+      properties:
+        statuses:
+          type: array
+          nullable: false
+          items:
+            $ref: '#/components/schemas/response-status'
+    request-metadata:
+      type: object
+      nullable: false
+      properties:
+        correlationId:
+          type: string
+          maxLength: 50
+          example: 8a321c5e-4ac7-45da-824d-e0b3f5b9a416
+    response-status:
+      title: response-status
+      type: object
+      properties:
+        severity:
+          nullable: false
+          type: string
+          description: 'overall status of the operation, i.e. success, warning, error'
+        code:
+          nullable: false
+          type: string
+          description: message code registered in Enterprise Service database
+        reason:
+          nullable: false
+          type: string
+        description:
+          nullable: false
+          type: string
+          description: description of message code
+
+     
+            
+            
+          
+          
+          
+          
+          
+ 
